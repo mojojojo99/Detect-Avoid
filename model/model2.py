@@ -23,7 +23,7 @@ model.add(layers.Dense(64, activation='relu'))
 # Add another:
 model.add(layers.Dense(64, activation='relu'))
 # Add a softmax layer with 1 output unit:
-model.add(layers.Dense(1, activation='softmax'))
+model.add(layers.Dense(1, activation='sigmoid'))
 
 
 
@@ -40,7 +40,7 @@ layers.Dense(64, activation='relu'),
 # Add another:
 layers.Dense(64, activation='relu'),
 # Add a softmax layer with 1 output unit:
-layers.Dense(1, activation='softmax')])
+layers.Dense(1, activation='sigmoid')])
 
 model.compile(optimizer=tf.train.AdamOptimizer(0.001),
               loss='binary_crossentropy',

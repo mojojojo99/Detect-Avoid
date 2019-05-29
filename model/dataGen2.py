@@ -78,7 +78,7 @@ while True:
     all_TOF.append(distance_in_mm)
     print (distance_in_mm)
     print (distances[0])
-    
+
     char = getch()
 
     if (char == "p"):
