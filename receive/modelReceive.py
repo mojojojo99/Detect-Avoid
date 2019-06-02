@@ -1,6 +1,8 @@
 import pickle
 import socket
 import numpy as np
+def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
+def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
 
 model = pickle.load(open('rf_classifier.pickle', 'rb'))
 TCP_IP = '169.254.74.41'  # this IP of my pc. When I want raspberry pi 2`s as a server, I replace it with its IP '169.254.54.195'
@@ -18,8 +20,12 @@ while 1:
     if not data: break
     Input = np.fromstring(data, dtype=float, count = -1, sep=' ')
     res = model.predict(np.array([Input]))
-    print ("received data:", Input)
-    print ("prediction:", res)
+    out = res[0]
+    # print ("received data:", Input)
+    if (out):
+        prRed("prediction:  1")
+    else:
+        prGreen("prediction: 0")
     conn.send(data)  # echo
 conn.close()
 
