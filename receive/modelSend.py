@@ -7,7 +7,7 @@ import time
 import socket
 
 ################SETUP SOCKET############################
-TCP_IP = '169.254.74.41' # this IP of my pc. When I want raspberry pi 2`s as a client, I replace it with its IP '169.254.54.195'
+TCP_IP = '169.254.75.176' # this IP of my pc. When I want raspberry pi 2`s as a client, I replace it with its IP '169.254.54.195'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 MESSAGE  = ""
