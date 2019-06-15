@@ -5,7 +5,6 @@ import numpy as np
 import VL53L1X
 import RPi.GPIO as GPIO
 import time
-import pickle
 
 
 app = Flask(__name__)
@@ -43,20 +42,19 @@ uMode      = 2
 uFrequency = 5
 uBW        = 240
 uSamples   = 200
-uTargets   = 1
+uTargets   = 5
 uMaxRange  = 50
 uMTI       = 0
 uMovement  = 0
 
 ################# SETUP MODEL #########################
-model = pickle.load(open('rf_classifier.pickle', 'rb'))
 
 # Initialze With Configurations
 uRAD.loadConfiguration(uMode, uFrequency, uBW, uSamples, uTargets, uMaxRange, uMTI, uMovement)
 
 # Storage Variables
-distances = [0]
-SNR = [0]
+distances = [0, 0, 0, 0, 0]
+SNR = [0, 0, 0, 0, 0]
 movement = [0]
 
 # Switch on URAD
@@ -65,22 +63,18 @@ count = 0
 
 data = np.zeros(15)
 while True:
-
     # Sensing
     uRAD.detection(distances,0,SNR,0,0,movement)
-
+    # start = time.time()
     tof3.start_ranging(3)                   # Start ranging, 1 = Short Range, 2 = Medium Range, 3 = Long Range
     distance_in_mm = tof3.get_distance()    # Grab the range in mm
     tof3.stop_ranging()                     # Stop ranging
+    # end = time.time()
+    # print(end - start)
+    print(distances)
+    print(distance_in_mm)
 
 
-    if count >= 4:
-        data[:12] = data[3:15]
-        data[12:15] = np.array([distances[0], SNR[0], distance_in_mm])
-        res = model.predict(data)
-        print (res)
-    else:
-        data[count:count+3]  = np.array([distances[0], SNR[0], distance_in_mm])
 
 
 
