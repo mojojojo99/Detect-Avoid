@@ -14,7 +14,7 @@ def readFile():
 
     images = []
 
-    for line in file: 
+    for line in file:
         fields = line.split()
         images.append(fields[8]) #append image file name
         params = np.vstack((params, np.array(fields[1:8])))
@@ -67,11 +67,16 @@ def orbDetect (file1, file2):
     return pts1, pts2, img1, img2
 
 def process(params):
-    prev = params[0]
-    cur = params[1]
-    trans = [0,0,0]
-    trans[:2] = -cur[1:3] + prev[1:3]
-    trans[2] = -cur[0] + prev[0]
+    prev = params[0] # gets loc + qt from the info of previous img
+    cur = params[1] # gets loc + qt from the info of previous img
+
+
+
+    ### My Coords: x, y, z => AIRSIM Coords: z, x, y
+    # stores the translation to get from current img to the prev imag
+    trans = [0,0,0] 
+    trans[:2] = -cur[1:3] + prev[1:3] # rearranging coords from airSim
+    trans[2] = -cur[0] + prev[0] #rearranging 
 
     currot = [0,0,0,0]
     prevrot = [0,0,0,0]
@@ -105,6 +110,9 @@ def staged(params_prev, params_cur):
     alpha = 90  #fov in degrees
     scalex = 360/np.tan(alpha*(np.pi)/360)
     scaley = 640/np.tan(alpha*(np.pi)/360)
+    scalex = 640/np.tan(alpha*(np.pi)/360)
+    scaley = 360/np.tan(alpha*(np.pi)/360)
+
     trans, rot = process([np.array(params_prev),
                           np.array(params_cur)])
 
@@ -141,8 +149,8 @@ def getDepth(pts3, pts4):
 
 
         x = np.linalg.solve(np.array([firsteq, secondeq]), -b)
-       
-        
+
+
         zs.append(x[0])
 
     return zs
@@ -166,7 +174,15 @@ for i in range(len(images)-1):
     pts1, pts2, img1, img2 = orbDetect(images[i], images[i+1])
     pts3, pts4 = convertPoints(pts1, pts2)
     scalex, scaley, trans, rot = staged(params[i], params[i+1])
-    zs = getDepth(pts3, pts4)
+
+    try:
+            # your code that will (maybe) throw
+        zs = getDepth(pts3, pts4)
+    except np.linalg.LinAlgError as err:
+            if 'Singular matrix' in str(err):
+                print(err)
+            else:
+                raise
 
     fig,ax = plt.subplots(1)
 
@@ -177,3 +193,5 @@ for i in range(len(images)-1):
         ax.annotate(z, (x, y))
 
     plt.savefig('hello' + str(i) + '.png')
+
+
